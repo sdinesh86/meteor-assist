@@ -1,0 +1,19 @@
+{
+  "name": "meteor-assist",
+  "main": "./lib/meteor-assist",
+  "version": "0.0.1",
+  "description": "A short description of your package",
+  "keywords": [],
+  "activationCommands": {
+    "atom-workspace": "meteor-assist:toggle"
+  },
+  "repository": "https://github.com/sdinesh86/meteor-assist",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+    "fs-plus": "^2.8.1",
+    "jquery": "^2.1.4"
+  }
+}
