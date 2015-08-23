@@ -2,7 +2,7 @@
   "name": "meteor-assist",
   "main": "./lib/meteor-assist",
   "version": "0.0.1",
-  "description": "A short description of your package",
+  "description": "Create meteor (html) / (js, coffee) / (css, less) files with ease",
   "keywords": [],
   "activationCommands": {
     "atom-workspace": "meteor-assist:toggle"
