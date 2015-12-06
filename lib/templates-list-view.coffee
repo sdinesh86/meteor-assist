@@ -13,12 +13,16 @@ class TemplatesListView extends View
 
   initialize: ->
 
-    @list.on 'mousedown', 'li', ( e ) =>
+    @list.on 'click', 'li', ( e ) =>
       @selectItemView($(e.target).closest('li'))
 
     @list.on 'dblclick', 'li span.title-text', @editItemText
     @list.on 'blur', 'li atom-text-editor.title-edittext', @cancelEditItemText
     @list.on 'click', 'li .actions-button > span', @itemActionButtonClicked
+    @list.on 'click', 'li span.dropdown-icon', (e) =>
+      item = $(e.target).closest('li')
+      subMenu = item.children('ol.list-group')
+      subMenu.slideToggle(400)
 
     atom.commands.add @element, 'core:confirm': @confirmEditItemText
 
@@ -59,7 +63,7 @@ class TemplatesListView extends View
     else if $(e.target).attr('action') == 'delete'
       item = $(e.target).closest('li')
       item.remove()
-
+      e.preventDefault()
     false
 
   getSelectedItem: ->
@@ -87,9 +91,9 @@ class TemplatesListView extends View
           @span class:'icon icon-file-directory text-highlight', action:'create', type:'FOLDER' if type == 'GROUP' or type == 'FOLDER'
           @span class:'icon icon-file-code text-highlight', action:'create', type:'FILE' if type == 'GROUP' or type == 'FOLDER'
           @span class:'icon icon-x text-highlight', action:'delete'
-        @span class:"icon icon-chevron-right text-highlight" if type == 'GROUP' or type == 'FOLDER'
+        @span class:"icon icon-chevron-right text-highlight inline-block dropdown-icon" if type == 'GROUP' or type == 'FOLDER'
         @span displayName, class:"title-text #{classType}"
-        @tag 'atom-text-editor', mini:true, class:'title-edittext', style:'display: none;'
+        @tag 'atom-text-editor', mini:true, class:'title-edittext inline-block', style:'display: none;'
         @ol class:'list-group block'
 
   addItem: (item, parent) ->

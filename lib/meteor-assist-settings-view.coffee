@@ -10,16 +10,18 @@ class MeteorAssistSettingsView extends View
         @span 'Meteor Assist Settings', class:'icon icon-package'
       @div class:'ma-panel-body-wrapper panel-body', =>
         @div class:'ma-left-pane', =>
-          @div class:'btn-group btn-group-sm', =>
-            @button '', class:'btn icon icon-database', click:'addGroupNode'
-            @button '', class:'btn icon icon-file-directory', click:'addFolderNode'
-            @button '', class:'btn icon icon-file-code', click:'addFileNode'
+          @div class:'btn-group btn-group-sm padded', =>
+            @button 'Add Group', class:'btn icon icon-database', click:'addGroupNode'
+            @button 'Add Folder', class:'btn icon icon-file-directory', click:'addFolderNode'
+            @button 'Add File', class:'btn icon icon-file-code', click:'addFileNode'
           @subview 'ntemplatesListView', new TemplatesListView
         @div class:'ma-right-pane', =>
-          @tag 'atom-text-editor', class:'template-editor', outlet:'templateEditor'
+          @tag 'atom-text-editor', class:'template-editor', outlet:'templateEditor', style:'display: none;'
 
   initialize: ->
     @ntemplatesListView.onItemSelected @templateSelected
+    @templateEditor.on 'keydown', ( e ) ->
+      console.log e
 
   show: ->
     @panel ?= atom.workspace.addBottomPanel(item:this)
@@ -37,7 +39,7 @@ class MeteorAssistSettingsView extends View
   templateSelected: ( view ) =>
     if view? and view.data('select-list-item').type == 'FILE'
       @templateEditor.fadeIn(400)
-      @templateEditor[0].model.setText()
+      @templateEditor[0].model.setText("")
     else
       @templateEditor.fadeOut(400)
 
