@@ -9,3 +9,6 @@
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
 '.tree-view':
   'ctrl-alt-o': 'meteor-assist:toggle'
+
+'atom-workspace':
+  'alt-m': 'meteor-assist:toggle-settings-view'

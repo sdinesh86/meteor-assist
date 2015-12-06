@@ -7,3 +7,18 @@
     }
     {'type': 'separator'}
   ]
+
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Meteor Asssit'
+      'submenu': [
+        {
+          'label': 'Settings'
+          'command': 'meteor-assist:toggle-settings-view'
+        }
+      ]
+    ]
+  }
+]

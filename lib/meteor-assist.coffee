@@ -1,11 +1,16 @@
 MeteorAssistView = require './meteor-assist-view'
+MeteorAssistSettingsView = require './meteor-assist-settings-view'
+MeteorAssistUtility = require './meteor-assist-utility'
+
 {CompositeDisposable} = require 'atom'
 
 module.exports = MeteorAssist =
-  meteorAssistView: null
-  modalPanel: null
-  subscriptions: null
   config:
+    configFilePath:
+      type:'string'
+      default:"#{atom.packages.resolvePackagePath('meteor-assist')}\\templatesConfigPath.cson"
+      title:'Config file'
+      description:'This file store all the data for the templates'
     precompInFolder:
       type: 'boolean'
       default: true
@@ -20,21 +25,14 @@ module.exports = MeteorAssist =
       enum: ['coffeescript', 'javascript']
 
   activate: (state) ->
-
     @meteorAssistView = new MeteorAssistView()
-
-    # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    @subscriptions = new CompositeDisposable
+    @meteorAssistSettingsView = new MeteorAssistSettingsView()
 
     # Register command that toggles this view
-    @subscriptions.add atom.commands.add '.tree-view', 'meteor-assist:toggle': => @toggle()
+    atom.commands.add '.tree-view', 'meteor-assist:toggle': => @meteorAssistView.show()
+    atom.commands.add 'atom-workspace', 'meteor-assist:toggle-settings-view': => @meteorAssistSettingsView.toggle()
 
   deactivate: ->
-    @modalPanel.destroy()
-    @subscriptions.dispose()
     @meteorAssistView.destroy()
 
   serialize: ->
-
-  toggle: ->
-    @meteorAssistView.show()
