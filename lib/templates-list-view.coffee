@@ -62,6 +62,9 @@ class TemplatesListView extends View
         @addItem({name:'item',displayName:'New Item', type:$(e.target).attr('type')}, lg)
     else if $(e.target).attr('action') == 'delete'
       item = $(e.target).closest('li')
+      if item.hasClass('selected')
+        newSel = if item.next().length > 0 then item.next() else item.prev()
+        @selectItemView(newSel)
       item.remove()
       e.preventDefault()
     false
@@ -73,9 +76,10 @@ class TemplatesListView extends View
     @list.find('li.selected')
 
   selectItemView: (view) ->
-    return unless view.length
-    @list.find('.selected').removeClass('selected')
-    view.addClass('selected')
+    if view.length
+      @list.find('.selected').removeClass('selected')
+      view.addClass('selected')
+
     @emitter.emit 'item-selected', view
 
   viewForItem: ({name, displayName, type}) ->

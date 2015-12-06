@@ -20,8 +20,10 @@ class MeteorAssistSettingsView extends View
 
   initialize: ->
     @ntemplatesListView.onItemSelected @templateSelected
-    @templateEditor.on 'keydown', ( e ) ->
-      console.log e
+    @templateEditor.on 'keydown', ( e ) =>
+      # console.log e
+      if e.ctrlKey and e.which == 83
+        @saveTemplate e
 
   show: ->
     @panel ?= atom.workspace.addBottomPanel(item:this)
@@ -37,12 +39,30 @@ class MeteorAssistSettingsView extends View
     @ntemplatesListView.addItem({name:'fileNode', displayName:"File Node", type:'FILE'})
 
   templateSelected: ( view ) =>
-    if view? and view.data('select-list-item').type == 'FILE'
+    if view.length and view.data('select-list-item').type == 'FILE'
       @templateEditor.fadeIn(400)
-      @templateEditor[0].model.setText("")
+      val = @ntemplatesListView.getSelectedItem().templateContent
+      if val?
+        @templateEditor[0].model.setText(val)
+      else
+        @templateEditor[0].model.setText("")
     else
       @templateEditor.fadeOut(400)
 
+  saveTemplate: ( e ) =>
+    @ntemplatesListView.getSelectedItem().templateContent = $(e.target)[0].model.getText()
+    @saveToConfig()
+
+  saveToConfig: ->
+    recurseCollect = ( list ) ->
+      obj = list.map ( ) ->
+        data = $(@).data('select-list-item')
+        if (data.type == "GROUP" or data.type == "FOLDER") and $(@).children('ol.list-group').children('li').length > 0
+          data["items"] = recurseCollect($(@).children('ol.list-group').children('li'))
+        data
+      obj
+
+    recurseCollect( @ntemplatesListView.list.children('li') )
   toggle: ->
     if @panel?.isVisible()
       @panel.hide()

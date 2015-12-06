@@ -122,7 +122,7 @@ class MeteorAssistEditorView
       for key, val of $filesArray
         # console.log @getFileContents templateName, val.format
         doesExists = fs.isFileSync val.filename
-        
+
         unless doesExists
           fs.writeFileSync val.filename, @getFileContents(templateName, val.format)
         else
