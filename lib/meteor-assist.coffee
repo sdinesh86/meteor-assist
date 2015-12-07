@@ -8,7 +8,7 @@ module.exports = MeteorAssist =
   config:
     configFilePath:
       type:'string'
-      default:"#{atom.packages.resolvePackagePath('meteor-assist')}\\templatesConfigPath.cson"
+      default:"#{atom.packages.resolvePackagePath('meteor-assist')}\\templatesConfig.cson"
       title:'Config file'
       description:'This file store all the data for the templates'
     precompInFolder:

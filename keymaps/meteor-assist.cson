@@ -11,4 +11,4 @@
   'ctrl-alt-o': 'meteor-assist:toggle'
 
 'atom-workspace':
-  'alt-m': 'meteor-assist:toggle-settings-view'
+  'alt-n': 'meteor-assist:toggle-settings-view'

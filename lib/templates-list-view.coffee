@@ -1,5 +1,6 @@
 {View, $, $$} = require 'atom-space-pen-views'
 {Emitter} = require 'atom'
+path = require 'path'
 
 module.exports =
 class TemplatesListView extends View
@@ -29,60 +30,13 @@ class TemplatesListView extends View
   onItemSelected: ( callback ) ->
     @emitter.on 'item-selected', callback
 
-  editItemText: ( e ) =>
-    own = $(e.target)
-    item = own.closest('li')
-    editText = own.next()
+  onSelectionChanged: ( callback ) ->
+    @emitter.on 'selection-changed', callback
 
-    own.hide()
-    editText[0].model.setText(item.data('select-list-item').displayName)
-    editText.fadeIn(400).focus()
+  onFileNameChanged: (callback) ->
+    @emitter.on 'file-name-changed', callback
 
-  confirmEditItemText: (e) =>
-    own = $(e.target)
-    item = own.closest('li')
-    title = own.prev()
-    newVal = own[0].model.getText()
-    own.hide()
-    item.data('select-list-item').displayName = newVal
-    title.html(newVal)
-    title.fadeIn(400)
-
-  cancelEditItemText: ( e ) ->
-    own = $(e.target)
-    title = own.prev()
-    own.hide()
-    title.fadeIn(400)
-
-  itemActionButtonClicked: ( e ) =>
-    if $(e.target).attr('action') == 'create'
-      item = $(e.target).closest('li')
-      lg = item.children('ol.list-group')
-      if lg?
-        @addItem({name:'item',displayName:'New Item', type:$(e.target).attr('type')}, lg)
-    else if $(e.target).attr('action') == 'delete'
-      item = $(e.target).closest('li')
-      if item.hasClass('selected')
-        newSel = if item.next().length > 0 then item.next() else item.prev()
-        @selectItemView(newSel)
-      item.remove()
-      e.preventDefault()
-    false
-
-  getSelectedItem: ->
-    @getSelectedItemView().data('select-list-item')
-
-  getSelectedItemView: ->
-    @list.find('li.selected')
-
-  selectItemView: (view) ->
-    if view.length
-      @list.find('.selected').removeClass('selected')
-      view.addClass('selected')
-
-    @emitter.emit 'item-selected', view
-
-  viewForItem: ({name, displayName, type}) ->
+  viewForItem: ({displayName, type, templateContent, extension}) ->
     $$ ->
       classType = switch type
         when 'GROUP' then 'icon icon-database'
@@ -100,6 +54,70 @@ class TemplatesListView extends View
         @tag 'atom-text-editor', mini:true, class:'title-edittext inline-block', style:'display: none;'
         @ol class:'list-group block'
 
+  editItemText: ( e ) =>
+    own = $(e.target)
+    item = own.closest('li')
+    editText = own.next()
+
+    own.hide()
+    editText[0].model.setText(item.data('select-list-item').displayName)
+    editText.fadeIn(400).focus()
+
+  confirmEditItemText: (e) =>
+    edtText = $(e.target)
+    li = edtText.closest('li')
+    titleSpan = edtText.prev()
+    newVal = edtText[0].model.getText()
+
+    data = li.data('select-list-item')
+    data.displayName = newVal
+    data["extension"] = path.extname(newVal)
+
+    li.data('select-list-item', data)
+
+    edtText.hide()
+    titleSpan.html(newVal)
+    titleSpan.fadeIn(400)
+    @emitter.emit 'file-name-changed', li
+
+  cancelEditItemText: ( e ) ->
+    own = $(e.target)
+    title = own.prev()
+    own.hide()
+    title.fadeIn(400)
+
+  itemActionButtonClicked: ( e ) =>
+    if $(e.target).attr('action') == 'create'
+      item = $(e.target).closest('li')
+      lg = item.children('ol.list-group')
+      if lg?
+        @addItem({displayName:'New Item', type:$(e.target).attr('type')}, lg)
+    else if $(e.target).attr('action') == 'delete'
+      item = $(e.target).closest('li')
+      if item.hasClass('selected')
+        newSel = if item.next().length > 0 then item.next() else item.prev()
+        @selectItemView(newSel)
+      item.remove()
+      e.preventDefault()
+    false
+
+  getSelectedItem: ->
+    @getSelectedItemView().data('select-list-item')
+
+  getSelectedItemView: ->
+    @list.find('li.selected')
+
+  selectItemView: (view) ->
+    if view.length
+      oldSelection = @list.find('.selected')
+      newItem = view
+      unless oldSelection[0] == newItem[0]
+        oldSelection.removeClass('selected')
+        newItem.addClass('selected')
+        @emitter.emit 'selection-changed', view
+    else
+      @emitter.emit 'selection-changed', null
+
   addItem: (item, parent) ->
     itemView = $(@viewForItem(item))
     itemView.data('select-list-item', item)
@@ -107,5 +125,16 @@ class TemplatesListView extends View
       parent.append(itemView)
     else
       @list.append(itemView)
+    itemView
 
-  populateItems: ->
+  populateItems: ( json ) ->
+    self = @
+    @list.empty()
+    parseNodes = ( nodes, parent ) ->
+      for i in [0..(nodes.length-1)]
+        node = nodes[i]
+        li = self.addItem(node, parent)
+        if node.items != undefined and node.items.length > 0
+          parseNodes(node.items, li.children('ol.list-group') )
+
+    parseNodes( json, @list)
