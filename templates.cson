@@ -1,0 +1,24 @@
+[
+  {
+    displayName: "FOLDER 0"
+    type: "FOLDER"
+    items: [
+      {
+        displayName: "FILE 0"
+        type: "FILE"
+      }
+      {
+        displayName: "FILE 1"
+        type: "FILE"
+      }
+      {
+        displayName: "FILE 0"
+        type: "FILE"
+      }
+      {
+        displayName: "FILE 1"
+        type: "FILE"
+      }
+    ]
+  }
+]

@@ -28,8 +28,10 @@ module.exports = MeteorAssist =
     @meteorAssistView = new MeteorAssistView()
     @meteorAssistSettingsView = new MeteorAssistSettingsView()
 
+    console.log "Activating the Package"
+
     # Register command that toggles this view
-    atom.commands.add '.tree-view', 'meteor-assist:toggle': => @meteorAssistView.show()
+    atom.commands.add '.tree-view', 'meteor-assist:toggle': => @meteorAssistView.toggle()
     atom.commands.add 'atom-workspace', 'meteor-assist:toggle-settings-view': => @meteorAssistSettingsView.toggle()
 
   deactivate: ->

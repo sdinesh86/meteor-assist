@@ -27,6 +27,68 @@
           </template>
         '''
       }
+      {
+        displayName: "[{[templateName]}].coffee"
+        type: "FILE"
+        extension: ".coffee"
+        templateContent: '''
+          Template.[{[templateName]}].helpers
+          
+          Template.[{[templateName]}].helpers
+          
+          Template.[{[templateName]}].onRendered ->
+            
+        '''
+      }
+      {
+        displayName: "[{[templateName]}].html"
+        type: "FILE"
+        extension: ".html"
+        templateContent: '''
+          <template name="[{[templateName]}]">
+          
+          </template>
+        '''
+      }
+      {
+        displayName: "[{[templateName]}].coffee"
+        type: "FILE"
+        extension: ".coffee"
+        templateContent: '''
+          Template.[{[templateName]}].helpers
+          
+          Template.[{[templateName]}].helpers
+          
+          Template.[{[templateName]}].onRendered ->
+            
+        '''
+      }
+      {
+        displayName: "[{[templateName]}].html"
+        type: "FILE"
+        extension: ".html"
+        templateContent: '''
+          <template name="[{[templateName]}]">
+          
+          </template>
+        '''
+      }
     ]
+  }
+  {
+    displayName: "Basic HTML Template.html"
+    type: "FILE"
+    extension: ".html"
+    templateContent: "asdasd"
+  }
+  {
+    displayName: "File Node"
+    type: "FILE"
+    templateContent: "asdasd"
+  }
+  {
+    displayName: "File Node"
+    type: "FILE"
+    templateContent: "sadsa"
   }
 ]
