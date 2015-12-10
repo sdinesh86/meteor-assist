@@ -63,22 +63,26 @@ class TemplatesTreeView extends View
     else
       listItem = $(e.target).closest('li')
       list = listItem.children('ol.list-group')
-
+      type = $(e.target).data('type')
       @addItem( {
-        displayName: "#{$(e.target).data('type')} #{list.children().length}"
-        type: $(e.target).data('type')
+        displayName: if type == "GROUP" || type == "FOLDER" then "#{type} #{@list.children().length}" else "#{type} #{list.children().length}.ext"
+        type: type
         }, list)
     e.preventDefault()
     false
 
   onAddItemButtonClicked: ( e ) =>
+    type = $(e.target).data('type')
     @addItem {
-      displayName: "#{$(e.target).data('type')} #{@list.children().length}"
-      type: $(e.target).data('type')
+      displayName: if type == "GROUP" || type == "FOLDER" then "#{type} #{@list.children().length}" else "#{type} #{@list.children().length}.ext"
+      type: type
     }
 
   onListItemLabelChanged: ( {newText, view} ) ->
     view.data('list-item-data').displayName = newText
+
+  onSelectionChanged: ( callback ) ->
+    @emitter.on 'selection-changed', callback
 
   addItem: ( item, parent ) ->
     itemView = $(@viewForItem(item))
@@ -150,9 +154,9 @@ class TemplatesTreeView extends View
 
     processListItem = ( node ) ->
       data = JSON.parse(JSON.stringify($(node).data('list-item-data')))
+      data.items = []
+
       $(node).find( '> ol.list-group > li').each ( ) ->
-        if not data.hasOwnProperty('items')
-          data.items = []
         data.items.push processListItem($(@))
       data
 

@@ -4,6 +4,8 @@ CSON = require 'season'
 
 module.exports =
 class MeteorAssistSettingsView extends View
+  settingsObject: {}
+
   @content: ->
     @div class:'ma-settings-view-wrapper', =>
       @div class:'ma-panel-header', =>
@@ -14,15 +16,26 @@ class MeteorAssistSettingsView extends View
       @div class:'ma-panel-body', =>
         @div class:'ma-left-pane', =>
           @subview 'h_templatesTreeView', new TemplatesTreeView()
-        @div class:'ma-right-pane'
+        @div class:'ma-right-pane', =>
+          @tag 'atom-text-editor', outlet:'templateContentEditor'
 
   constructor: ->
     super
 
+  initialize: ->
+    @h_templatesTreeView.onSelectionChanged @onTemplatesTreeViewSelectionChanged
+
+    @templateContentEditor.hide()
+
+  onTemplatesTreeViewSelectionChanged: ( view ) =>
+    @templateContentEditor.fadeOut(500)
+    if view? and view.length > 0
+      if view.data('list-item-data').type =="FILE"
+        @templateContentEditor.fadeIn(500)
+
   saveSettings: ->
     configFilePath = atom.config.get('meteor-assist.templatesFilePath')
     CSON.writeFile configFilePath, @h_templatesTreeView.serializeList(), ( err, res ) ->
-
 
   hide: ->
     @panel.hide()

@@ -1,23 +1,12 @@
 [
   {
-    displayName: "FOLDER 0"
+    displayName: "Basic Meteor Template"
     type: "FOLDER"
     items: [
       {
-        displayName: "FILE 0"
+        displayName: "MainCoffee.coffee"
         type: "FILE"
-      }
-      {
-        displayName: "FILE 1"
-        type: "FILE"
-      }
-      {
-        displayName: "FILE 0"
-        type: "FILE"
-      }
-      {
-        displayName: "FILE 1"
-        type: "FILE"
+        items: []
       }
     ]
   }
