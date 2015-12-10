@@ -1,6 +1,7 @@
 {View, $, $$} = require 'atom-space-pen-views'
 {Emitter} = require 'atom'
 EditableLabelView = require './editable-label'
+Path = require 'path'
 
 module.exports =
 
@@ -45,7 +46,7 @@ class TemplatesTreeView extends View
       @li =>
         @span class:'icon icon-chevron-right' if item.type == "GROUP" || item.type == "FOLDER"
         @span class:iconClass
-        @subview 'item-title', createEditableLabel()
+        @subview 'editableItemLabel', createEditableLabel()
         @div class:'pull-right action-buttons', =>
           @span class:'icon icon-database text-highlight', 'data-type':'GROUP' if item.type == "GROUP" || item.type == "FOLDER"
           @span class:'icon icon-file-directory text-highlight', 'data-type':'FOLDER' if item.type == "GROUP" || item.type == "FOLDER"
@@ -79,7 +80,9 @@ class TemplatesTreeView extends View
     }
 
   onListItemLabelChanged: ( {newText, view} ) ->
+    ext = Path.extname(newText)
     view.data('list-item-data').displayName = newText
+    view.data('list-item-data').extension = ext
 
   onSelectionChanged: ( callback ) ->
     @emitter.on 'selection-changed', callback

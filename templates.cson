@@ -1,11 +1,28 @@
 [
   {
     displayName: "Basic Meteor Template"
-    type: "FOLDER"
+    type: "GROUP"
+    extension: ""
     items: [
       {
         displayName: "MainCoffee.coffee"
         type: "FILE"
+        templateContent: '''
+          Template.name.helpers
+          
+          Template.name.events
+          
+          Template.name.onRendered ->
+          
+        '''
+        extension: ".coffee"
+        items: []
+      }
+      {
+        displayName: "MainHTML.html"
+        type: "FILE"
+        templateContent: ""
+        extension: ".html"
         items: []
       }
     ]
