@@ -21,7 +21,11 @@
       {
         displayName: "MainHTML.html"
         type: "FILE"
-        templateContent: ""
+        templateContent: '''
+          <template name="">
+            
+          </template>
+        '''
         extension: ".html"
         items: []
       }
