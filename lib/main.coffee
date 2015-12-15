@@ -12,6 +12,7 @@ module.exports = MeteorAssist =
 
     # Register command for views
     atom.commands.add 'atom-workspace', 'meteor-assist:toggle-settings-view': @toggleSettingsView
+    atom.commands.add '.tree-view', 'meteor-assist:toggle-template-generator': @toggleTemplatesGenerator
 
   toggleSettingsView: =>
     unless @maSettingsView?
@@ -20,6 +21,13 @@ module.exports = MeteorAssist =
       @maSettingsView = new SettingsView()
 
     @maSettingsView.toggle()
+
+  toggleTemplatesGenerator: ->
+    unless @maTemplatesGeneratorView?
+      TemplatesGeneratorView = require './meteor-assist-template-selector'
+      @maTemplatesGeneratorView = new TemplatesGeneratorView()
+
+    @maTemplatesGeneratorView.toggle()
 
   deactivate: ->
 

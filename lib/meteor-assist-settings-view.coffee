@@ -1,6 +1,7 @@
 {View, $} = require 'atom-space-pen-views'
 TemplatesTreeView = require './meteor-assist-templates-tree-view'
 CSON = require 'season'
+Path = require 'path'
 
 module.exports =
 class MeteorAssistSettingsView extends View
@@ -25,13 +26,39 @@ class MeteorAssistSettingsView extends View
   initialize: ->
     @h_templatesTreeView.onSelectionChanged @onTemplatesTreeViewSelectionChanged
 
+    ceditor = @templateContentEditor[0].getModel()
+    ceditor.onDidStopChanging (  ) =>
+      data = @templateContentEditor.data('list-item-data')
+      if data?
+        data.templateContent = ceditor.getText()
+
     @templateContentEditor.hide()
 
   onTemplatesTreeViewSelectionChanged: ( view ) =>
-    @templateContentEditor.fadeOut(500)
+    @templateContentEditor.fadeOut(200)
+    @templateContentEditor.data('list-item-data', undefined)
+    @templateContentEditor[0].getModel().setText("")
+    viewData = view.data('list-item-data')
+
     if view? and view.length > 0
-      if view.data('list-item-data').type =="FILE"
-        @templateContentEditor.fadeIn(500)
+      if viewData.type =="FILE"
+        @templateContentEditor.data('list-item-data', viewData)
+        grammar = @getGrammarFromExtension(viewData.extension.replace('.',""))
+        if grammar != undefined
+          @templateContentEditor[0].getModel().setGrammar(grammar)
+
+        if viewData.templateContent != undefined
+          @templateContentEditor[0].getModel().setText(viewData.templateContent)
+
+        @templateContentEditor.fadeIn(200)
+
+  getGrammarFromExtension: ( ext ) ->
+    grammars = atom.grammars.getGrammars()
+    g = undefined
+    for grammar in grammars
+      if ext in grammar.fileTypes
+        return g = grammar
+    g
 
   saveSettings: ->
     configFilePath = atom.config.get('meteor-assist.templatesFilePath')
@@ -42,10 +69,13 @@ class MeteorAssistSettingsView extends View
 
   show: ->
     @panel ?= atom.workspace.addBottomPanel(item:this)
+
     configFilePath = atom.config.get('meteor-assist.templatesFilePath')
     CSON.readFile configFilePath, ( err, json ) =>
        if json?
          @h_templatesTreeView.deSerializeList( json )
+
+    @templateContentEditor.hide()
     @panel.show()
 
   toggle: ->
