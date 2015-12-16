@@ -17,6 +17,7 @@
     "atom-space-pen-views": "^2.1.0",
     "fs-plus": "^2.8.1",
     "jquery": "^2.1.4",
-    "season": "^5.3.0"
+    "season": "^5.3.0",
+    "underscore": "^1.8.3"
   }
 }

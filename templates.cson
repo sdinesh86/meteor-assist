@@ -7,25 +7,25 @@
       {
         displayName: "MainCoffee.coffee"
         type: "FILE"
-        templateContent: '''
-          Template.name.helpers
-          
-          Template.name.events
-          
-          Template.name.onRendered ->
-          
-        '''
+        templateContent: '
+          Template.[{[name]}].helpers
+
+          Template.[{[name]}].events
+
+          Template.[{[name]}].onRendered ->
+
+        '
         extension: ".coffee"
         items: []
       }
       {
         displayName: "MainHTML.html"
         type: "FILE"
-        templateContent: '''
-          <template name="">
-            
+        templateContent: '
+          <template name="[{[templateName]}]">
+
           </template>
-        '''
+        '
         extension: ".html"
         items: []
       }
