@@ -1,32 +1,34 @@
 [
   {
-    displayName: "Basic Meteor Template"
-    type: "GROUP"
-    extension: ""
+    displayName: "FILE 0.ext"
+    type: "FILE"
+    extension: ".ext"
+    templateContent: "asdasdasd"
+    items: []
+  }
+  {
+    displayName: "FILE 1.ext"
+    type: "FILE"
+    extension: ".ext"
+    templateContent: ""
+    items: []
+  }
+  {
+    displayName: "FILE 2.ext"
+    type: "FILE"
+    extension: ".ext"
+    templateContent: "asdasdasd"
+    items: []
+  }
+  {
+    displayName: "FOLDER 3"
+    type: "FOLDER"
     items: [
       {
-        displayName: "MainCoffee.coffee"
+        displayName: "FILE 4.ext"
         type: "FILE"
-        templateContent: '
-          Template.[{[name]}].helpers
-
-          Template.[{[name]}].events
-
-          Template.[{[name]}].onRendered ->
-
-        '
-        extension: ".coffee"
-        items: []
-      }
-      {
-        displayName: "MainHTML.html"
-        type: "FILE"
-        templateContent: '
-          <template name="[{[templateName]}]">
-
-          </template>
-        '
-        extension: ".html"
+        extension: ".ext"
+        templateContent: "asdasdasd"
         items: []
       }
     ]

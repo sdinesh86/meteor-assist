@@ -7,11 +7,6 @@ module.exports =
 
 class TemplatesTreeView extends View
 
-  constructor: ->
-    super
-    @emitter = new Emitter
-    @addClass('ma-tree-view-wrapper')
-
   @content: ->
     @div =>
       @div class:'ma-tree-view-header', =>
@@ -23,6 +18,8 @@ class TemplatesTreeView extends View
         @ol class:'list-group', outlet:'list', =>
 
   initialize: ->
+    @addClass('ma-tree-view-wrapper')
+
     # Subscribe to the event on the action buttons on the item
     @list.on 'click', 'li .action-buttons span', @onItemActionButtonClicked
 
@@ -40,7 +37,8 @@ class TemplatesTreeView extends View
       createEditableLabel = =>
         temp = new EditableLabelView(  )
         temp.setText( item.displayName )
-        temp.onLabelChanged (self.onListItemLabelChanged)
+        temp.on 'label-edit-changed', ( e, data ) =>
+          (self.onListItemLabelChanged(data))
         temp
 
       @li =>
@@ -84,9 +82,6 @@ class TemplatesTreeView extends View
     view.data('list-item-data').displayName = newText
     view.data('list-item-data').extension = ext
 
-  onSelectionChanged: ( callback ) ->
-    @emitter.on 'selection-changed', callback
-
   addItem: ( item, parent ) ->
     itemView = $(@viewForItem(item))
     itemView.data('list-item-data', item)
@@ -95,8 +90,6 @@ class TemplatesTreeView extends View
       parent.append(itemView)
     else
       @list.append(itemView)
-
-    @emitter.emit 'item-added', itemView
 
     itemView
 
@@ -124,20 +117,17 @@ class TemplatesTreeView extends View
   selectListItemView: ( view ) ->
     unless view?
       # Emitt Selection changed event
-      @emitter.emit 'selection-changed', null
+      @trigger 'selection-changed', null
     else
       unless view.hasClass('selected')
-        @list.find('.selected').removeClass('selected')
         view.addClass('selected')
-        @emitter.emit 'selection-changed', view
+        @list.find('.selected').removeClass('selected')
+        @trigger 'selection-changed', $(view)
 
   populateItems: ( items ) ->
     @list.empty()
     for item in items
       @addItem(item)
-
-  readSettingsFile: ->
-
 
   deSerializeList: ( json ) ->
     if json.length > 0

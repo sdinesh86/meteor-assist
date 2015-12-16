@@ -24,7 +24,8 @@ class MeteorAssistSettingsView extends View
     super
 
   initialize: ->
-    @h_templatesTreeView.onSelectionChanged @onTemplatesTreeViewSelectionChanged
+    @h_templatesTreeView.on 'selection-changed', ( e, view ) =>
+      @onTemplatesTreeViewSelectionChanged( $(view) )
 
     ceditor = @templateContentEditor[0].getModel()
     ceditor.onDidStopChanging (  ) =>
@@ -38,6 +39,7 @@ class MeteorAssistSettingsView extends View
     @templateContentEditor.fadeOut(200)
     @templateContentEditor.data('list-item-data', undefined)
     @templateContentEditor[0].getModel().setText("")
+    console.log viewData
     viewData = view.data('list-item-data')
 
     if view? and view.length > 0

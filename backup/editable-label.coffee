@@ -12,7 +12,7 @@ class EditableLabelView extends View
       @tag 'atom-text-editor', class:'title-editbox', mini:true, outlet:'title_editbox'
 
   initialize: ->
-    @emitter = new Emitter
+    # @emitter = new Emitter
 
     @title_label.on 'dblclick', ( e ) =>
       console.log $(e.target).html()
@@ -43,7 +43,8 @@ class EditableLabelView extends View
             @title_label.html(newText)
             $(e.target).hide()
             @title_label.fadeIn(400)
-            @emitter.emit 'label-edit-changed', ({view:$(e.target).closest('li'), newText:newText})
+            @trigger 'label-edit-changed', ({view:$(e.target).closest('li'), newText:newText})
+            # @emitter.emit 'label-edit-changed', ({view:$(e.target).closest('li'), newText:newText})
 
         else
           $(e.target).hide()
@@ -58,5 +59,5 @@ class EditableLabelView extends View
   getText: ->
     @title_label.html()
 
-  onLabelChanged: ( callback ) ->
-    @emitter.on 'label-edit-changed', callback
+  # onLabelChanged: ( callback ) ->
+  #   @emitter.on 'label-edit-changed', callback

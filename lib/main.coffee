@@ -21,7 +21,7 @@ module.exports = MeteorAssist =
 
   toggleSettingsView: =>
     unless @maSettingsView?
-      SettingsView = require './meteor-assist-settings-view'
+      SettingsView = require './meteor-assist-bottom-panel'
       console.log "Creating new SettingsView"
       @maSettingsView = new SettingsView()
 
