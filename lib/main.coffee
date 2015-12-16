@@ -1,3 +1,7 @@
+CSON = require 'season'
+
+TemplateSelectorDialog = null
+FieldsListDialog = null
 
 module.exports = MeteorAssist =
   config:
@@ -12,7 +16,8 @@ module.exports = MeteorAssist =
 
     # Register command for views
     atom.commands.add 'atom-workspace', 'meteor-assist:toggle-settings-view': @toggleSettingsView
-    atom.commands.add '.tree-view', 'meteor-assist:toggle-template-generator': @toggleTemplatesGenerator
+    atom.commands.add '.tree-view', 'meteor-assist:toggle-template-generator': ( e ) =>
+      @toggleTemplatesGenerator()
 
   toggleSettingsView: =>
     unless @maSettingsView?
@@ -23,11 +28,29 @@ module.exports = MeteorAssist =
     @maSettingsView.toggle()
 
   toggleTemplatesGenerator: ->
-    unless @maTemplatesGeneratorView?
-      TemplatesGeneratorView = require './meteor-assist-template-selector'
-      @maTemplatesGeneratorView = new TemplatesGeneratorView()
+    configFilePath = atom.config.get('meteor-assist.templatesFilePath')
+    CSON.readFile configFilePath, ( err, json ) =>
+       if json?
+         @showTemplatesGeneratorList( json )
 
-    @maTemplatesGeneratorView.toggle()
+  showTemplatesGeneratorList: ( json ) ->
+    pkgTreeView = atom.packages.getActivePackage('tree-view')
+    selectedEntry = pkgTreeView.mainModule.treeView.selectedEntry() ? pkgTreeView.mainModule.treeView.roots[0]
+    selectedPath = selectedEntry?.getPath() ? ''
+
+    TemplateSelectorDialog ?= require './meteor-assist-template-selector'
+    dialog = new TemplateSelectorDialog( )
+    dialog.setItems( json )
+    dialog.on 'template-selected', (e, template) =>
+      @toggleFieldsList( template, selectedPath )
+    dialog.attach()
+
+  toggleFieldsList: ( template, selectedPath ) ->
+    FieldsListDialog ?= require './meteor-assist-fields-list'
+    dialog = new FieldsListDialog( {template, selectedPath} )
+    dialog.on 'confirm', ( e ) =>
+
+    dialog.attach()
 
   deactivate: ->
 
