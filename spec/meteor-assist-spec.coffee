@@ -1,4 +1,4 @@
-MeteorAssist = require '../lib/meteor-assist'
+MeteorAssist = require '../lib/main'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
 #
@@ -16,24 +16,24 @@ describe "MeteorAssist", ->
     it "hides and shows the modal panel", ->
       # Before the activation event the view is not on the DOM, and no panel
       # has been created
-      expect(workspaceElement.querySelector('.meteor-assist')).not.toExist()
+      expect(workspaceElement.querySelector('.ma-settings-view-wrapper')).not.toExist()
 
       # This is an activation event, triggering it will cause the package to be
       # activated.
-      atom.commands.dispatch workspaceElement, 'meteor-assist:toggle'
+      atom.commands.dispatch workspaceElement, 'meteor-assist:toggle-settings-view'
 
       waitsForPromise ->
         activationPromise
 
       runs ->
-        expect(workspaceElement.querySelector('.meteor-assist')).toExist()
+        expect(workspaceElement.querySelector('.ma-settings-view-wrapper')).toExist()
 
-        meteorAssistElement = workspaceElement.querySelector('.meteor-assist')
+        meteorAssistElement = workspaceElement.querySelector('.ma-settings-view-wrapper')
         expect(meteorAssistElement).toExist()
-
+        console.log meteorAssistElement
         meteorAssistPanel = atom.workspace.panelForItem(meteorAssistElement)
         expect(meteorAssistPanel.isVisible()).toBe true
-        atom.commands.dispatch workspaceElement, 'meteor-assist:toggle'
+        atom.commands.dispatch workspaceElement, 'meteor-assist:toggle-settings-view'
         expect(meteorAssistPanel.isVisible()).toBe false
 
     it "hides and shows the view", ->

@@ -1,3 +1,4 @@
+
 CSON = require 'season'
 
 TemplateSelectorDialog = null
@@ -30,15 +31,15 @@ module.exports = MeteorAssist =
   toggleTemplatesGenerator: ->
     configFilePath = atom.config.get('meteor-assist.templatesFilePath')
     CSON.readFile configFilePath, ( err, json ) =>
-       if json?
-         @showTemplatesGeneratorList( json )
+        if json?
+          @showTemplatesGeneratorList( json )
 
   showTemplatesGeneratorList: ( json ) ->
     pkgTreeView = atom.packages.getActivePackage('tree-view')
     selectedEntry = pkgTreeView.mainModule.treeView.selectedEntry() ? pkgTreeView.mainModule.treeView.roots[0]
     selectedPath = selectedEntry?.getPath() ? ''
 
-    TemplateSelectorDialog ?= require './meteor-assist-template-selector'
+    TemplateSelectorDialog ?= require './meteor-assist-template-selector-dialog'
     dialog = new TemplateSelectorDialog( )
     dialog.setItems( json )
     dialog.on 'template-selected', (e, template) =>

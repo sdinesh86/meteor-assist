@@ -1,36 +1,18 @@
-[
-  {
-    displayName: "FILE 0.ext"
+"Basic Meteor Template":
+  type: "GROUP"
+  "[{[fileName]}].html":
     type: "FILE"
-    extension: ".ext"
-    templateContent: "asdasdasd"
-    items: []
-  }
-  {
-    displayName: "FILE 1.ext"
-    type: "FILE"
-    extension: ".ext"
-    templateContent: ""
-    items: []
-  }
-  {
-    displayName: "FILE 2.ext"
-    type: "FILE"
-    extension: ".ext"
-    templateContent: "asdasdasd"
-    items: []
-  }
-  {
-    displayName: "FOLDER 3"
-    type: "FOLDER"
-    items: [
-      {
-        displayName: "FILE 4.ext"
-        type: "FILE"
-        extension: ".ext"
-        templateContent: "asdasdasd"
-        items: []
-      }
-    ]
-  }
-]
+    content: '''
+      <template name="[{[templateName]}]">
+      
+      </template>
+    '''
+"[{[fileName]}].coffee":
+  type: "FILE"
+  content: '''
+    {View} = require 'atom-space-pen-views'
+    
+    module.exports =
+    class [{[className]}] extends View
+    
+  '''

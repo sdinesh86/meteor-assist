@@ -15,13 +15,16 @@ class MeteorAssistSelectListView extends View
       @div class:'select-list block', =>
         @ol class:'list-group', outlet:'list', =>
 
-
   # Public: Initialize the View
   #
   # Returns the [Description] as `undefined`.
   initialize: ->
     # Subscribe to the event on the action buttons on the item
-    @list.on 'click', 'li .action-buttons span', @onListItemButtonClicked
+    @list.on 'click', 'li .action-buttons span', @onListItemActionsButtonClicked
+
+    @list.on 'dblclick', 'li span.item-title', @startEditingTitle
+    @list.on 'keydown', 'li .item-title-editor', @confirmTitleEdit
+    @list.on 'blur', 'li .item-title-editor', @cancelEditingTitle
 
     # Subscribe to the event when the item is clicked
     @list.on 'click', 'li', @onListItemClicked
@@ -38,41 +41,62 @@ class MeteorAssistSelectListView extends View
         list.slideDown(200)
         own.removeClass('icon-chevron-right').addClass('icon-chevron-down')
 
-    @list.on 'dblclick', 'li span.item-title', ( e ) =>
-      spanTitle = $(e.target)
-      editorTitle = spanTitle.next()
-      editorTitle[0].getModel().setText(spanTitle.html())
-      spanTitle.hide()
-      editorTitle.show()
-      editorTitle.focus()
 
-    @list.on 'blur', 'li .item-title-editor', @cancelEditingTitle
-
-    @list.on 'keydown', 'li .item-title-editor', ( e ) =>
-      editorTitle = $(e.target)
-      spanTitle = editorTitle.prev()
-      type = spanTitle.closest('li').data('list-item-data').type
-      newText = editorTitle[0].getModel().getText()
-
-      if e.which == 13
-        isEmptyString = newText == ""
-        isFileName = not isEmptyString and ( Path.extname(newText) != "" and Path.extname(newText) != "." )
-
-        if isEmptyString
-          atom.notifications.addWarning('Error : File name should have an extention')
-
-        if not isEmptyString
-          if type == "FILE" and not isFileName
-            atom.notifications.addWarning('Error : File name should have an extention')
-          else
-            spanTitle.html(newText)
-            ext = Path.extname(newText)
-            spanTitle.closest('li').data('list-item-data').displayName = newText
-            spanTitle.closest('li').data('list-item-data').extension = ext
-            editorTitle.hide()
-            spanTitle.fadeIn(400)
+  # startEditingTitle: Start Editing the title
+  #
+  # * `e ` The [description] as {[type]}.
+  #
+  # Returns the [Description] as `undefined`.
+  startEditingTitle: ( e ) =>
+    spanTitle = $(e.target)
+    editorTitle = spanTitle.next()
+    editorTitle[0].getModel().setText(spanTitle.html())
+    spanTitle.hide()
+    editorTitle.show()
+    editorTitle.focus()
 
 
+  # startEditingTitle: Item Title Editing
+  #
+  # * `e ` The [description] as {[type]}.
+  #
+  # Returns the [Description] as `undefined`.
+  confirmTitleEdit: ( e ) =>
+    editorTitle = $(e.target)
+    spanTitle = editorTitle.prev()
+    li = spanTitle.closest('li')
+    type = li.data('type')
+    newText = editorTitle[0].getModel().getText()
+
+    if e.which == 13
+      isEmptyString = newText == ""
+      isFileName = not isEmptyString and ( Path.extname(newText) != "" and Path.extname(newText) != "." )
+      sFindString = 'li[data-name="' + newText + '"]'
+      bNameExists = li.parent().children(sFindString).length > 0
+
+      if isEmptyString
+        atom.notifications.addWarning('Name Cannot be empty')
+        editorTitle.blur()
+
+      if bNameExists
+        atom.notifications.addWarning('The Name that you are trying to give already exists, please use another one ...')
+        editorTitle.blur()
+
+      if type == "FILE" and not isFileName
+        atom.notifications.addWarning('File Name should have Extension')
+        editorTitle.blur()
+
+      if not isEmptyString and not bNameExists
+        spanTitle.html(newText)
+        li.attr('data-name', newText)
+        editorTitle.hide()
+        spanTitle.fadeIn(400)
+
+  # cancelEditingTitle: Stop Title Editing
+  #
+  # * `e ` The [description] as {[type]}.
+  #
+  # Returns the [Description] as `undefined`.
   cancelEditingTitle: ( e ) =>
     editorTitle = $(e.target)
     spanTitle = editorTitle.prev()
@@ -80,56 +104,29 @@ class MeteorAssistSelectListView extends View
     editorTitle.hide()
     spanTitle.show()
 
-  # viewForItem: Generate the dom nodes for the given item
+  # onAddItemButtonClicked: Event Handler for the buttons
   #
-  # * `item ` The Object representing the item as {[type]}.
-  #
-  # Returns the [Description] as `undefined`.
-  viewForItem: ( item ) ->
-    $$ ->
-
-      iconClass = switch item.type
-        when "GROUP" then 'icon icon-database'
-        when "FOLDER" then 'icon icon-file-directory'
-        when "FILE" then 'icon icon-file-code'
-
-      @li =>
-        @span class:'icon icon-chevron-right dropdown-icon' if item.type == "GROUP" || item.type == "FOLDER"
-        @span class:iconClass
-        @div class:'editable-label inline-block', =>
-          @span item.displayName, class:'item-title inline-block'
-          @tag 'atom-text-editor', class:'item-title-editor', style:'display: none;', mini:true
-        @div class:'pull-right action-buttons', =>
-          @span class:'icon icon-database text-highlight', 'data-type':'GROUP' if item.type == "GROUP" || item.type == "FOLDER"
-          @span class:'icon icon-file-directory text-highlight', 'data-type':'FOLDER' if item.type == "GROUP" || item.type == "FOLDER"
-          @span class:'icon icon-file-code text-highlight', 'data-type':'FILE' if item.type == "GROUP" || item.type == "FOLDER"
-          @span class:'icon icon-remove-close text-highlight'
-        @ol class:'list-group' if item.type == "GROUP" || item.type == "FOLDER"
-
-  # Public: Event for handelling the click for button
-  #
-  # * `e ` The jquery event as {[type]}.
+  # * `e ` The [description] as {[type]}.
   #
   # Returns the [Description] as `undefined`.
-  onAddItemButtonClicked: ( e ) =>
+  onAddItemButtonClicked: ( e ) ->
+    srcElement = $(e.target)
+    type = srcElement.data('type')
+    sName = "#{type} #{@list.children().length}"
+    sName = "#{sName}.ext" if type == "FILE"
 
-    # Get the type attribute from the clicked button
-    type = $(e.target).data('type')
-
-    # Public: [Description].
-    item = {
-      displayName: if type == "GROUP" || type == "FOLDER" then "#{type} #{@list.children().length}" else "#{type} #{@list.children().length}.ext"
-      type: type
+    @addItem {
+      'type': type
+      'name': sName
+      'content': if type == "FILE" then "" else undefined
     }
-    item.extension  = ".ext" if type is "FILE"
-    item.templateContent  = "" if type is "FILE"
 
-    @addItem item
-
-  # onListItemButtonClicked: Event Handler for list item buttons
+  # onListItemButtonClicked: Event Handler for the actions buttons on the list item
+  #
+  # * `e ` The [description] as {[type]}.
   #
   # Returns the [Description] as `undefined`.
-  onListItemButtonClicked: ( e ) =>
+  onListItemActionsButtonClicked: ( e ) =>
     if $(e.target).hasClass('icon-remove-close')
       # If the clicked button has remove class then remove the current item from the list
       @removeItem( $(e.target).closest('li') )
@@ -138,56 +135,63 @@ class MeteorAssistSelectListView extends View
       listItem = $(e.target).closest('li')
       list = listItem.children('ol.list-group')
       type = $(e.target).data('type')
+      sName = "#{type} #{list.children().length}"
+      sName = "#{sName}.ext" if type == "FILE"
 
-      # Public: [Description].
-      item = {
-        displayName: if type == "GROUP" || type == "FOLDER" then "#{type} #{@list.children().length}" else "#{type} #{@list.children().length}.ext"
-        type: type
-      }
-
-      item.extension  = ".ext" if type is "FILE"
-      item.templateContent  = "" if type is "FILE"
-
-      @addItem item, list
+      @addItem {
+        'type':type
+        'name': sName
+        'content': if type == "FILE" then "" else undefined
+        }, list
 
     e.preventDefault()
     false
 
-  # populateItems: Populate the list with the items
+  # onListItemClicked: handler to list the list item when clicked
   #
-  # * `items ` The [description] as {[type]}.
+  # * `e ` The [description] as {[type]}.
   #
   # Returns the [Description] as `undefined`.
-  populateItems: ( json ) ->
-    if json.length > 0
-      self = @
-      @list.empty()
-      parseNodes = ( nodes, parent ) ->
-        for i in [0..(nodes.length-1)]
-          node = nodes[i]
-          li = self.addItem(node, parent)
-          if node.items != undefined and node.items.length > 0
-            parseNodes(node.items, li.children('ol.list-group') )
+  onListItemClicked: ( e ) =>
+    listItem = if not $(e.target).is('li') then $(e.target).closest('li') else $(e.target)
+    @selectListItemView( listItem )
 
-      parseNodes( json, @list)
-    # @list.empty()
-    # for item in items
-    #   @addItem(item)
-
-
-  # Public: Add the passed down item to Select List
+  # viewForItem: Generate the DOM based on the given item
   #
-  # * `item ` The Item object with properties as {object}.
+  # * `item ` The [description] as {[type]}.
+  #
+  # Returns the [Description] as `undefined`.
+  viewForItem: ( item ) ->
+    sContent = item.content or ""
+
+    $$ ->
+      @li 'data-type':item.type, 'data-name': item.name, =>
+        @span class:'icon icon-chevron-right dropdown-icon' if item.type == "GROUP" || item.type == "FOLDER"
+        @div class:'editable-label inline-block', =>
+          @span item.name, class:'item-title inline-block'
+          @tag 'atom-text-editor', class:'item-title-editor inline-block', style:'display: none; width: 100%;', mini:true
+        @div class:'pull-right action-buttons', =>
+          if item.type == "GROUP" || item.type == "FOLDER"
+            @span class:'icon icon-database text-highlight', 'data-type':'GROUP' if item.type == "GROUP" || item.type == "FOLDER"
+            @span class:'icon icon-file-directory text-highlight', 'data-type':'FOLDER' if item.type == "GROUP" || item.type == "FOLDER"
+            @span class:'icon icon-file-code text-highlight', 'data-type':'FILE' if item.type == "GROUP" || item.type == "FOLDER"
+          @span class:'icon icon-remove-close text-highlight'
+        @ol class:'list-group', style:'display: none;' if item.type == "GROUP" || item.type == "FOLDER"
+
+
+  # addItem: This creates the DOM element and appends it to the list
+  #
+  # * `item ` The [description] as {[type]}.
   #
   # Returns the [Description] as `undefined`.
   addItem: ( item, parent ) ->
     itemView = $(@viewForItem(item))
-    itemView.data('list-item-data', item)
+    itemView.data('item-list-data', item)
 
     if parent?
-      parent.append(itemView)
+      parent.append itemView
     else
-      @list.append(itemView)
+      @list.append itemView
 
     itemView
 
@@ -234,14 +238,26 @@ class MeteorAssistSelectListView extends View
         view.addClass('selected')
         @trigger 'selection-changed', view
 
-  # onListItemClicked: handler to list the list item when clicked
+  # populateItems: Populate the list with the items
   #
-  # * `e ` The [description] as {[type]}.
+  # * `items ` The [description] as {[type]}.
   #
   # Returns the [Description] as `undefined`.
-  onListItemClicked: ( e ) =>
-    listItem = if not $(e.target).is('li') then $(e.target).closest('li') else $(e.target)
-    @selectListItemView( listItem )
+  populateItems: ( json ) ->
+    self = @
+    @list.empty()
+    iterateOver = ( obj, parent ) ->
+      for key of obj
+        val = obj[key]
+        if (typeof val) == 'object'
+          li = self.addItem {
+            'name': key
+            'type': val.type
+            'content': val.content if val.content?
+          }, parent
+          iterateOver val, ($(li).children('ol.list-group'))
+
+    iterateOver json, @list
 
   # deSerializeList: Deserialize the list to a JSON object
   #
@@ -265,18 +281,22 @@ class MeteorAssistSelectListView extends View
   #
   # Returns the [Description] as `undefined`.
   serializeList: ->
-    serializeObject = []
+    serializeObject = {}
 
-    processListItem = ( node ) ->
-      console.log $(node).data('list-item-data')
-      data = JSON.parse(JSON.stringify($(node).data('list-item-data')))
-      data.items = []
+    processListItem = ( node, parent ) ->
+      type = node.attr('data-type')
+      sContent = node.data('item-list-data').content
+      sName = node.find('.editable-label span.item-title').html()
+      parent[sName] = { }
+      parent[sName].type = type
+
+      if sContent != ""
+        parent[sName].content = sContent
 
       $(node).find( '> ol.list-group > li').each ( ) ->
-        data.items.push processListItem($(@))
-      data
+        processListItem($(@), parent[sName] )
 
     @list.children('li').each ( ) ->
-      serializeObject.push processListItem($(@))
+      processListItem($(@), serializeObject)
 
     serializeObject

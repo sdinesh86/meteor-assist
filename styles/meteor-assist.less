@@ -70,8 +70,33 @@
         background-color: @button-background-color;
         border-bottom: 1px solid @tool-panel-border-color;
 
-        &:hover { background-color: @button-background-color-hover; }
+        &:hover { background-color: @button-background-color-hover; color: @tool-panel-background-color; }
         &.selected { background-color: darken(@button-background-color-hover, 10%); }
+
+        & .editable-label::before {
+          font-family: "Octicons Regular";
+          content: "";
+          display: inline;
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          font-weight: bold;
+          font-style: normal;
+          margin-right: 8px;
+          line-height: 1;
+        }
+
+        &[data-type="GROUP"] .editable-label::before {
+          content: "\f096"
+        }
+
+        &[data-type="FOLDER"] .editable-label::before {
+          content: "\f016"
+        }
+
+        &[data-type="FILE"] .editable-label::before {
+          content: "\f010"
+        }
 
         ol.list-group {
           max-height: 100%;

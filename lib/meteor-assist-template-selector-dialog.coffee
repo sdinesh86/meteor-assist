@@ -1,5 +1,4 @@
-{View, SelectListView, $$ } = require 'atom-space-pen-views'
-{Emitter} = require 'atom'
+{SelectListView, $$, $ } = require 'atom-space-pen-views'
 CSON = require 'season'
 
 module.exports =
@@ -12,10 +11,23 @@ class TemplateSelectorListView extends SelectListView
     @selectedPath = selectedPath
 
   viewForItem: ( item ) ->
-
     $$ ->
       @li =>
-        @span item.displayName
+        @span item
+
+  populateList: ->
+    super
+    @list.empty()
+
+    for key of @items
+      item = @items[key]
+      obj = {}
+      obj[key] = item
+      itemView = $(@viewForItem(key))
+      itemView.data('select-list-item', obj)
+      @list.append itemView
+
+    @selectItemView(@list.find('li:first'))
 
   confirmed: ( item ) ->
     @trigger 'template-selected', item

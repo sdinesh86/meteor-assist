@@ -24,9 +24,8 @@ class MeteorAssistBottomPanel extends View
 
     ceditor = @templateContentEditor[0].getModel()
     ceditor.onDidStopChanging (  ) =>
-      data = @templateContentEditor.data('list-item-data')
-      if data?
-        data.templateContent = ceditor.getText()
+      if @currentSelectedItem?
+         @currentSelectedItem.data('item-list-data').content = ceditor.getText()
 
     @templateContentEditor.hide()
 
@@ -56,29 +55,37 @@ class MeteorAssistBottomPanel extends View
   #
   # Returns the [Description] as `undefined`.
   onSelectViewSelectionChanged: ( view ) ->
+    # Hide the text editor
     @templateContentEditor.hide()
-    @templateContentEditor.data('list-item-data', undefined)
+    # reset the content string variable and text
+    @templateContentEditor.data('content-string', undefined)
     @templateContentEditor[0].getModel().setText("")
-    viewData = view.data('list-item-data')
+
+    fileName = view.find('.editable-label > span.item-title').html()
+    type = view.data('type')
+    fContent = view.data('item-list-data').content or ""
 
     if view? and view.length > 0
-      if viewData.type =="FILE"
-        @templateContentEditor.data('list-item-data', viewData)
-        console.log viewData
-        grammar = @getGrammarFromExtension(viewData.extension.replace('.',""))
+      @currentSelectedItem = view
+      if type =="FILE"
+        grammar = @getGrammarFromExtension(MeteorAssistUtilities.getExtensionFromFileName(fileName).replace('.',""))
+
         if grammar != undefined
           @templateContentEditor[0].getModel().setGrammar(grammar)
 
-        if viewData.templateContent != undefined
-          @templateContentEditor[0].getModel().setText(viewData.templateContent)
-
+        @templateContentEditor[0].getModel().setText(fContent)
         @templateContentEditor.fadeIn(200)
+    else
+      @currentSelectedItem = undefined
 
   # hide: Hide the bottom panel
   #
   # Returns the [Description] as `undefined`.
   hide: ->
     @panel.hide()
+
+  isVisible: ( ) ->
+    @panel.isVisible()
 
   # show: Show the Bottom Panel
   #
