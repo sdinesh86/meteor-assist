@@ -1,11 +1,11 @@
 {
   "name": "meteor-assist",
-  "main": "./lib/meteor-assist",
+  "main": "./lib/main",
   "version": "0.1.0",
   "description": "Create meteor (html) / (js, coffee) / (css, less) files with ease",
   "keywords": [],
   "activationCommands": {
-    ".tree-view": "meteor-assist:toggle",
+    ".tree-view": "meteor-assist:toggle-template-generator",
     "atom-workspace": "meteor-assist:toggle-settings-view"
   },
   "repository": "https://github.com/sdinesh86/meteor-assist",
@@ -16,6 +16,8 @@
   "dependencies": {
     "atom-space-pen-views": "^2.1.0",
     "fs-plus": "^2.8.1",
-    "jquery": "^2.1.4"
+    "jquery": "^2.1.4",
+    "season": "^5.3.0",
+    "underscore": "^1.8.3"
   }
 }

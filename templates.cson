@@ -1,0 +1,18 @@
+"Basic Meteor Template":
+  type: "GROUP"
+  "[{[fileName]}].html":
+    type: "FILE"
+    content: '''
+      <template name="[{[templateName]}]">
+      
+      </template>
+    '''
+"[{[fileName]}].coffee":
+  type: "FILE"
+  content: '''
+    {View} = require 'atom-space-pen-views'
+    
+    module.exports =
+    class [{[className]}] extends View
+    
+  '''
