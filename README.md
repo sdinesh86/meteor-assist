@@ -2,5 +2,4 @@
 
 Create meteor (html) / (js, coffee) / (css, less) files with ease
 
-![Demo Animation](https://www.dropbox.com/home/Public?preview=meteor-assist.gif)
-
+This package is replaced with a new more feature rich package [Template Generator](https://atom.io/packages/template-generator)
