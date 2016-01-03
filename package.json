@@ -1,7 +1,7 @@
 {
   "name": "meteor-assist",
   "main": "./lib/meteor-assist",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create meteor (html) / (js, coffee) / (css, less) files with ease",
   "keywords": [],
   "activationCommands": {
